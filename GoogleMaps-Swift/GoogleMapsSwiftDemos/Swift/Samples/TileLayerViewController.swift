@@ -14,13 +14,19 @@
 import GoogleMaps
 import UIKit
 
+class TestTileLayer: GMSSyncTileLayer {
+  override func tileFor(x: UInt, y: UInt, zoom: UInt) -> UIImage? {
+    return UIImage(named: "DisplayP3Logo")
+  }
+}
+
 final class TileLayerViewController: UIViewController {
   private var selectedIndex = 0 {
     didSet {
       updateTileLayer()
     }
   }
-  private var tileLayer: GMSURLTileLayer?
+  private var tileLayer: TestTileLayer?
 
   private lazy var mapView: GMSMapView = {
     let camera = GMSCameraPosition(latitude: 37.78318, longitude: -122.403874, zoom: 18)
@@ -55,13 +61,7 @@ final class TileLayerViewController: UIViewController {
   func updateTileLayer() {
     // Clear existing tileLayer, if any.
     tileLayer?.map = nil
-    // Create a new GMSTileLayer with the new floor choice.
-    tileLayer = GMSURLTileLayer(urlConstructor: { (x: UInt, y: UInt, zoom: UInt) -> URL? in
-      return URL(
-        string:
-          "https://www.gstatic.com/io2010maps/tiles/9/L\(self.selectedIndex + 1)_\(zoom)_\(x)_\(y).png"
-      )
-    })
+    tileLayer = TestTileLayer()
     tileLayer?.map = mapView
   }
 }
