@@ -17,6 +17,27 @@
 
 #import <GoogleMaps/GoogleMaps.h>
 
+@interface TestTileLayer : GMSSyncTileLayer
+
+@end
+
+@implementation TestTileLayer
+
+- (UIImage *)tileForX:(NSUInteger)x y:(NSUInteger)y zoom:(NSUInteger)zoom {
+  UIImage *trash = [UIImage systemImageNamed:@"trash"];
+  CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
+  CGContextRef context = CGBitmapContextCreate(NULL, trash.size.width, trash.size.height, 16, 800, colorSpace, kCGImageAlphaNoneSkipLast | kCGImageByteOrder16Little);
+  CGContextDrawImage(context, CGRectMake(0, 0, trash.size.width, trash.size.height), trash.CGImage);
+  CGImageRef image = CGBitmapContextCreateImage(context);
+  UIImage *tileImage = [UIImage imageWithCGImage:image];
+  CGImageRelease(image);
+  CGContextRelease(context);
+  CGColorSpaceRelease(colorSpace);
+  return tileImage;
+}
+
+@end
+
 @implementation TileLayerViewController {
   UISegmentedControl *_switcher;
   GMSMapView *_mapView;
@@ -73,7 +94,9 @@
                            (long)floor, (unsigned long)zoom, (unsigned long)x, (unsigned long)y];
       return [NSURL URLWithString:url];
     };
-    _tileLayer = [GMSURLTileLayer tileLayerWithURLConstructor:urls];
+//    _tileLayer = [GMSURLTileLayer tileLayerWithURLConstructor:urls];
+
+    _tileLayer = [[TestTileLayer alloc] init];
     _tileLayer.map = _mapView;
     _floor = floor;
   }
